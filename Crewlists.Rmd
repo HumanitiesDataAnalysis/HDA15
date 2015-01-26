@@ -1,0 +1,278 @@
+Visualizing Quantitative and Categorical Data in R
+========================================================
+
+Purpose
+-------
+
+Assumptions
+-----------
+
+This tutorial 
+
+The New Bedford Whaling Museum recently released a database of crewmember information. Using it, we can do some initial exploration of the sort historians might want to do with a rich but messy data source.
+
+This post serves as an introduction to using the R language. Rather than use the base R, it relies heavily on two additions to the language that make it much easier to use for exploring complicated datasets: Hadley Wickham's ggplot2 and plyr packages. If not included in your local installation of R, these can be added by typing in `install.packages(c("ggplot2","plyr","reshape2"))` into your computer, or using the `Package Manager`
+
+The first step is to launch R. The best way to do this is using RStudio, which adds a number of useful features to the core distribution. When there, the first step is to load three of Wickham's packages: 'plyr', which lets you perform aggregate operations on data, 'ggplot2', which, and 'reshape2', which lets you easily change the format of data.
+
+These packages have a cost: they tend to be substantially slower than the native R functions of the same sort. But they provide a helpful paradigm that will successfully work with hundreds of thousands of data points, at least. 
+
+``` {r dependencies}
+
+#install.packages(c("plyr","ggplot2","reshape2"))
+require(dplyr)
+require(ggplot2)
+require(reshape2)
+#Just to print out the options
+opts_chunk$set(eval=F)
+```
+
+Then, load in the data. Note the first version here is commented out: if you download the data locally, you could read it in that way.
+
+
+```{r loadInData}
+#crews = read.csv("~/shipping/CrewlistCleaned.csv")
+file = read.csv(file=url("http://benschmidt.org/CrewlistCleaned.csv"))
+crews = file
+```
+
+So now we have data. But what's in it? 
+
+Remember that R is composed of _functions_: each of these apply on an object.
+One useful function to know about is called `head`: it will show the first five elements of a data source.
+In R, the most common data structure is a `data.frame`; it's essentially a table where the rows correspond to observations, and the columns refer to variables.
+(It resembles a spreadsheet or database table).
+In this data set, as you'll see, each row corresponds to an individual crew member, and the columns give information about him, such as the ship he sailed on his, his name, his rank, and so forth.
+
+```{r FirstSummary}
+head(crews)
+```
+
+The first thing to do with a new data source is run `summary`, which figures out what the different columns in your database are and gives appropriate descriptions of the types of data in each. For numbers, it gives averages; for categorical data (called 'factors') in R, it lists the most common elements.
+
+```{r SecondSummary}
+summary(crews)
+
+```
+
+There's some good descriptive data about people, which suggests a chance for something about bodies--measurements, physical descriptions, and ages all have interesting interplays. That will be particularly valuable if we can tie it in to some other sorts of information. Before I get into that, there are couple variables that I just want to see fuller counts on: table() in R gives the best way to do that. I'm interested in names because I could link them up to census information and because they provide some clues to ethnicity; 
+
+
+```{r summary}
+sort(table(crews$Remarks),decreasing=T)[1:45]
+sort(table(crews$LastName),decreasing=T)[1:45]
+sort(table(crews$FirstName),decreasing=T)[1:45]
+sort(table(crews$Residence),decreasing=T)[1:45]
+```
+
+Residence is extremely valuable, but unstructured. Most of the names are straight Angle, but a few last names (Lopes, Silva, Sylvia) seem to capture Portuguese speakers, and ("Kanaka" is going to catch Polynesians)[http://en.wikipedia.org/wiki/Kanaka]. The residences also look somewhat useful, and could let us start to bootstrap up by looking for, say, Cape Verdean names that live in New Bedford. (Can we learn anything new about Cape Verdean ranks or desertion patterns?)
+
+Personal data
+---------------------
+
+We can learn something about the men who sailed on ships by looking at their vital statistics alone. We'll introduce 
+
+The most basic element in ggplot is a ggplot object. _This is not a graphic_: but it's the basic material for one. It sets the terms for 
+
+``` {r BasicPlot}
+ggplot(data=crews)
+```
+
+That code failed, because we didn't tell it _what_ to plot and _how_. In addition to starting a plot, we need to give it some more instructions telling it what to plot. That means we have to go back a little bit.
+
+Histograms
+--------------------------------
+
+Ggplot uses the "grammar of graphs:" ever graph is composed of several distinct elements: not just data. Charts can have several elements, but in addition to data, the most basic are:
+
+1. _Geometry_. This is perhaps the most familiar: we all talk about "line graphs" or "bar charts." The geometry says _which kind_ of chart you're making.
+2. An _aesthetic_. When you point to a graph and say "Higher means more profits," that's an aesthetic. The most common aesthetics will be things like `x` and `y`.
+3. A _scale_. Numbers have to be translated.
+
+
+For statisticians, the most basic chart is a histogram, which shows how frequent a single variable is at different levels. We can plot the height of our sailors by adding a new _layer_ to the plot: that consists of the function `geom_histogram` to build a histogram, and the aesthetic `aes(x=height)` to tell it we want a histogram about the distribution of height.
+
+```{r withALayer}
+
+ggplot(crews) + geom_histogram(aes(x=height,color=Rig))
+
+```
+
+Voila! A chart!
+
+That might seem like a lot of work, but the advantage is that once a plot is created, we can simply swap out the aesthetic to plot against--say--`date` or `age` as well. 
+
+```{r moreHistograms}
+ggplot(crews) + geom_histogram(aes(x=as.Date(date)))
+ggplot(crews) + geom_histogram(aes(x=Age))
+```
+
+When you use a histogram with a _categorical_ variable, it gives you a barplot, as when we look at the types of ships in the sample.
+
+```{r categoricalHistograms}
+ggplot(crews) + geom_histogram(aes(x=Rig))
+ggplot(crews) + geom_bar(aes(x=Rig))
+```
+
+A barplot is different, though, because we might want to add some more variables in. For example, we can add another aesthetic for 'fill' (which gives the color of the bars):
+
+``` {r}
+ggplot(crews) + geom_bar(aes(x=Rig,fill=Rig))
+```
+
+Why Everyone Hates Pie Charts
+---------------------------------------
+
+That's a nice chart. But we could also change it so the x-axis contains to information by just setting it to an empty string, and the bars will appear stacked on top of each other.
+``` {r toppedBar}
+ggplot(crews) + geom_bar(aes(x="",fill=Rig))
+```
+
+That's not as good a way of visualizing the information: you have to compare the size of chunks against each other. But if we make one more tweak—setting the y axis to a polar coordinate system—suddenly it becomes very familiar:
+
+``` {r}
+ggplot(crews) + geom_bar(aes(x="",fill=Rig))
+
+ggplot(crews) + geom_bar(aes(x="",fill=Rig)) + coord_polar("y")
+```
+
+
+It's a pie chart! Since Edward Tufte, pie charts are universally reviled; the grammar of graphs is describing them here as "a stacked bar chart plotted in a polar coordinate system." 
+
+Scatterplots
+--------------------------
+
+Summary stats are useful, but sometimes you want to compare two types of charts to each other. The next basic chart to use is a scatterplot: in ggplot, you can get this by using "geom_point." Suppose, for example, we want to compare height against age.
+
+``` {r}
+ggplot(crews) + geom_point(aes(x=Age,y=height),alpha=.1)
+```
+
+
+``` {r}
+ggplot(crews) + geom_point(aes(x=Age,y=height,color=Rig))
+```
+
+```{r DensityPlot}
+
+```
+
+That doesn't give you all that much useful: but it points you to another function, "stat_density," which itself points to "density," the basic function: there you can see that 'adjust' is what sets the smoothing bandwith.
+
+```{r aboutStatDensity}
+?stat_density
+```
+
+
+Just do some survey plots on the data we have. (You might need the hexbin package for this)
+
+``` {r}
+
+ggplot(crews[crews$height>3*12 & crews$height < 7*12,])+ 
+  geom_point(size=1,alpha=.2,position=position_jitter(h=1/12,w=1),color='red') + 
+  labs(title='Height in feet') + 
+  stat_summary(fun.y='mean',geom='point') + 
+  geom_smooth()
+
+ggplot(crews[crews$height>3*12 & crews$height < 7*12,],aes(y=height/12,x=Age))+ labs(title='Height in feet') + geom_hex()+ scale_fill_gradientn("Number of sailors",trans='log10',colours=heat.colors(10))
+
+crews[crews$height/12>6.5 & !is.na(crews$height),5:13]
+
+ggplot(crews[crews$height>3*12 & crews$height < 7*12,],aes(y=height/12,x=date))+ geom_point(size=2,alpha=.5) + labs(title='Height in feet') + geom_smooth() + xlim(as.Date("1860-1-1"),as.Date("1930-1-1"))
+
+ggplot(crews[crews$Hair!="",]) + geom_bar(aes(x=Hair)) + coord_flip()
+
+
+```
+
+Crew Sizes
+----------------
+It is helpful to learn that the data allows us to see aging curves neatly, but unsurprising. And there are surely better ways to learn if men got taller than to look at whaling records.
+
+But we can learn about whaling as well. Recall that each row here is a person, and that we have ships to look at. This is a common phenomenon; we want to _aggregate_ across something. The "plyr" (short for "apply") package has useful packages with which to do this.
+
+Hadley Wickham has a good tutorial, but the basic idea is that you can turn a dataframe, array, or list into any other one by applying a _function_ across its data.
+
+To counts journeys, for example, you can use the function `nrow` on each vessel-date combination in a dataset.
+
+
+``` {r CrewSize}
+
+crewSizes = ddply(crews,.variables=.(Vessel,date),nrow)
+head(crewSizes)
+ggplot(crewSizes,aes(x=date,y=V1)) + geom_point()
+
+ggplot(crewSizes,aes(x=date,y=V1)) + geom_point()
+
+crewSizes = ddply(crews,.(Vessel,date,Rig),nrow)
+ggplot(crewSizes,aes(x=date,y=V1,color=Rig)) + geom_point() + ylim(0,125)
+ggplot(crewSizes,aes(x=date,y=V1,color=Rig)) + geom_point() + ylim(0,125)+facet_wrap(~Rig) + geom_smooth() + xlim(as.Date("1860-1-1"),as.Date("1930-1-1"))
+
+
+```
+
+Hair and Skin color are one of the most interesting interactions here. The late 19th century is a period before racial identities have solidified, so the logbooks use a complicated array of vocabulary to describe skin and hair. It is obviously racialized, but in complicated ways. Looking at the interaction of these two variables lets us begin figuring it out.
+
+The function `table` gives us a cross-tabulated set of statistics. 
+
+``` {r HairandSkin}
+tabbed = table(crews$Skin,crews$Hair)
+tabbed=tabbed[rownames(tabbed)!="",colnames(tabbed)!=""]
+tabbed = tabbed[rowSums(tabbed)> 25,colSums(tabbed) > 25]
+hairs = names(sort(prcomp(scale(tabbed))$rotation[,1]))
+skins = names(sort(prcomp(scale(t(tabbed)))$rotation[,1]))
+physicalInteractions = melt(tabbed)
+names(physicalInteractions) = c("Skin","Hair","Number")
+physicalInteractions= physicalInteractions[physicalInteractions$Hair!="" & physicalInteractions$Skin!="" & physicalInteractions$Number>0,]
+ggplot(physicalInteractions) + geom_point(aes(x=Hair,y=Skin,size=Number),alpha=.3) + theme(axis.text.x=element_text(angle = 45, hjust = 1)) + scale_size_continuous(trans='sqrt',range=c(1,20)) + labs("Skin and hair interactions in the New Bedford Whaling database")
+```
+
+
+``` {r scaled}
+proportions = melt(scale(t(scale(tabbed))))
+names(proportions) = c("Hair","Skin","Representation")
+proportions$Skin = factor(proportions$Skin,levels = skins)
+proportions$Hair = factor(proportions$Hair,levels = hairs)
+#Doing a merge eliminates the grid-spots for which there are no actual individuals
+proportions=merge(proportions,physicalInteractions,all.x=T)
+proportions$exists = !is.na(proportions$Number)
+ggplot(proportions) + geom_tile(aes(x=Skin,y=Hair,fill=Representation)) + scale_fill_gradient2("Scale over-\nrepresentation")+ theme(axis.text.x=element_text(angle = 45, hjust = 1)) + coord_equal() + labs(title="Relative over- or under-representation of different hair-skin combinations\nin crew manifest descriptions")
+```
+
+Once you have some sense of the data, you're limited only by the machine learning applications you can come up with. One technique that has a particularly nice pedigree for humanists is correspondence analysis. This is too advanced to get to in class, probably, but let's take a quick look:
+
+``` {r FactorAnalysis}
+if (FALSE) {
+install.packages("FactoMineR")
+library(FactoMineR)
+variables = c("Hair","Skin")
+distilled = crews[variables]
+for (variable in variables) {
+  countsOfVariable = table(crews[[variable]])
+  names = names(countsOfVariable[countsOfVariable>20])
+  names = names[names!=""]
+  distilled = distilled[distilled[[variable]] %in% names,]
+}
+head(distilled)
+#mytable <- prop.table(mytable, 1) # row percentages
+#mytable <- prop.table(mytable, 2) # column percentages
+#f = MCA(distilled)
+coords = data.frame(f$var$coord)
+#Skip blank strings
+coords = coords[grep("_.",rownames(coords)),]
+#split the names into variable and value
+coords$variable = sapply(strsplit(rownames(coords),"_"),'[[',1)
+coords$value = sapply(strsplit(rownames(coords),"_"),'[[',2)
+
+ggplot(coords) + geom_text(aes(x=Dim.1,y=Dim.2,color=variable,label=value))
+
+fit <- ca(mytable)
+print(fit) # basic results
+data.frame(as.matt(fit))
+
+summary(fit) # extended results
+plot(fit) # symmetric map
+plot(fit, mass = TRUE, contrib = "absolute", map =
+   "rowgreen", arrows = c(FALSE, TRUE)) # asymmetric map 
+}
+```
