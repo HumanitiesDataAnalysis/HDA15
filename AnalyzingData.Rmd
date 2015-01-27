@@ -1,0 +1,69 @@
+---
+title: "Analyzing Data"
+author: "Ben Schmidt"
+date: "2015-01-27"
+output: pdf_document
+---
+
+# Introduction
+
+Now that we know how to read in data, we are finally ready to analyze it. 
+
+Data "analysis," of course, can mean many different things. The analyses we'll conduct to begin with are extremely simple; they mostly include counting, grouping, and 
+
+
+# The pipeline strategy for exploratory data analysis.
+
+Our core strategy will be a **pipeline** strategy where a single `data.frame` object is passed through a series of saved steps until it gives you useful results.
+
+`dplyr` exposes a number of functions that make this easy. But although they are more coherently bundled in this package, they are shared by a wide variety of data manipulation software. In particular, they closely resemble the operations of SQL, the most important data access language of all time.^[Note: if you have a slow computer or an extremely large data set, you can do all of these operations on data on disk. I recommend using `sqllite3` as the on-disk data storage engine: read the documentation at `?src_sqlite` for an explanation of how to read it in.]
+
+We'll be introducing 
+
+## Filtering
+
+### The `==`,`>`,and `<` operators
+
+
+The easiest way to filter 
+
+crews %>% filter(Age==82)
+
+
+#### `==` and `=`
+
+**Error alert**: one of the *most* frequent forms of errors you will encounter in data analysis is confusing the `==` operator with the `=` one.
+
+> Advanced note: in the early history of R, you *could not* in fact assign a variable by using the `=` sign. Instead, you would build an arrow out of two characters:
+> `president <- "Washington"`
+> This form of assignment is still used in R. If you're the sort of writer who sometimes starts sentences without having figured out the final clause, it can even be handy, because they can point in both directions:
+> `"Washington" -> president
+> Know to recognize this code when it appears.
+> But most computer languages use `=` for assignment and `==` for equality, and so R now follows suit. You will probably have an easier time coding if you just use `=` all of the time.
+> There is actually a third assignment operator, which introductory programmers will almost never encounter: the `<<-` assigner, which makes variable assignments that move outside their home function. We'll encounter this in the advanced functions section.
+
+### The `%in%` operator
+
+Almost as useful for humanities computing as `==` is the special operator `%in%`. `==` tests if two values are the same: `%in%` tests if the left hand sign is *part of* the right hand side. So for example
+
+``` {r}
+"New York"==c("Boston","New York","Philadelphia")
+"New York" %in% c("Boston","New York","Philadelphia")
+```
+
+
+
+## Summarizing
+
+
+## Grouping
+
+Now that you know how to filter and summarize, you're ready for the most important operation in dplyr: `group_by`. Unlike `filter` and `summarize`
+
+
+
+## Mutating
+
+Of course, 
+
+
