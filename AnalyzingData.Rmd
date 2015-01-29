@@ -5,6 +5,13 @@ date: "2015-01-27"
 output: pdf_document
 ---
 
+
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(eval=FALSE, warning=FALSE, message=FALSE)
+```
+
+
 # Introduction
 
 Now that we know how to read in data, we are finally ready to analyze it. 
@@ -204,13 +211,13 @@ The other way is by Googling. One of R's major flaws is that the name is so gene
 
 1. Using summarize, find the minimum age in the set. (Remember, the function to find a minimum is `min`.)
 
-``` {r Exercise 1}
+``` {r Exercise 1a}
 
 ```
 
 2. Using `filter`: what is the name of that youngest person? When did he or she sail?
 
-``` {r Exercise 2}
+``` {r Exercise 2a}
 
 ```
 
@@ -218,13 +225,13 @@ The other way is by Googling. One of R's major flaws is that the name is so gene
 3. How many sailors left on Barks between 1850 and 1880? Chain together `filter` and `summarize` with the special `n()` function. Note that this has a number of different conditions in the filter statement. You could build several filters in a row: but you can also include multiple filters by separating them with commas. For instance, `filter(school=="Northeastern",year==2015)` might be a valid filter on some dataset (though not this one.)
 
 
-``` {r Exercise 3}
+``` {r Exercise 3a}
 
 ```
 
 4. Question 3 told you how many sailors left on barks in those years. How many distinct voyages left? The variable `Voyage.number` identifies distinct voyages in this set. (This may require reading some documentation: reach out to me or a classmate if you can't figure it out. There are at least two ways: one involves using the `dplyr` function `distinct` before summarizing, and the second involves using the functions `length` and `unique` in your call to `summarize`.)
 
-``` {r Exercise 4}
+``` {r Exercise 4a}
 
 ```
 
@@ -279,8 +286,7 @@ One last useful pair of functions in dplyr are `select` and `mutate`. Select sim
 
 ```
 
-3. The `slice` operator is much like `head`, but lets you specify precisely the positions you want. `slice(1:10)` will give you the first ten rows of a frame; `slice(4)` will give you the fourth row of a frame.
-
+3. The `slice` operator is much like `head`, but lets you specify precisely the positions you want. `slice(1:10)` will give you the first ten rows of a frame; `slice(4)` will give you the fourth row of a frame.\
 Using `slice`: What were the ten largest cities in the United States in 1820?
 
 ``` {r Exercise 3}
@@ -289,38 +295,38 @@ Using `slice`: What were the ten largest cities in the United States in 1820?
 
 4. `slice` works *by group*. Using `slice` and `group_by`, what was the third largest city in the United States for every census year?
 
-``` {r Exercise 3}
+``` {r Exercise 4}
 
 ```
 
 5. Define a medium-sized city as any city with over 10,000 population. What **state** had the most medium-sized cities in 1900? (Remember the `n()` function get the count inside a summary.)
 
+``` {r Exercise 5}
+
+```
+
+6. Tricky: create a list of the **states** with the most medium-sized cities for each year from 1790 to 2010. (Note that `group_by` can use multiple variables at the same time. You can either use `rank` or `arrange` with `slice` after grouping by the appropriate variables. Note that arrange respects existing groups: you may need to use the `ungroup` function even after a `summarize` call.) 
+
 ``` {r Exercise 6}
 
 ```
 
-7. Tricky: create a list of the **states** with the most medium-sized cities for each year from 1790 to 2010. (Note that `group_by` can use multiple variables at the same time. You can either use `rank` or `arrange` with `slice` after grouping by the appropriate variables. Note that arrange respects existing groups: you may need to use the `ungroup` function even after a `summarize` call.) 
-
-``` {r Exercise 7}
-
-```
-
-8. Boston has been the largest city in its state in every census. What other cities have been the largest in their state every census since 1790?
+7. Boston has been the largest city in its state in every census. What other cities have been the largest in their state every census since 1790?
 
 
-```{r Exercise 8}
+```{r Exercise 7}
 
 ```
 
-9. (Tough) What state has had the most different cities as its largest? What are they? (Although you can answer both these questions with a single pipeline, it might be easier to do it with two.)
+8. (Tough) What state has had the most different cities as its largest? What are they? (Although you can answer both these questions with a single pipeline, it might be easier to do it with two.)
+
+``` {r Exercise 8}
+
+```
+
+9. (Tough) For question 8, you found states which had the same largest city since 1790. But most states weren't even in the USA in 1790. Find, instead, the states that have the same largest city for every appearance they make in the census lists.
 
 ``` {r Exercise 9}
-
-```
-
-10. (Tough) For question 8, you found states which had the same largest city since 1790. But most states weren't even in the USA in 1790. Find, instead, the states that have the same largest city for every appearance they make in the census lists.
-
-``` {r Exercise 10}
 
 
 ```
