@@ -215,7 +215,7 @@ Hadley Wickham's articles on "tidy" data lay out an extremely useful way to thin
 ```
 
 
-4. This data is clearly not tidy. (Why not?) Use `gather` to turn it into tidy data, and save it as a data.frame called "tidied". (Hint: the final frame will have a column called "year:" You will have to use gsub to remove Xs from the year name.)
+4. This data is clearly not tidy. (Why not?) Use `gather` to turn it into tidy data, and save it as a data.frame called "tidied". (Hint: the final frame will have a column called "year". You will have to use gsub to remove Xs from the year name.)
 
 ``` {r}
 
