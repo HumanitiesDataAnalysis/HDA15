@@ -219,18 +219,11 @@ a = read.csv("data/CESTACityData.csv")
 
 ``` {r}
 
-tidied = a %>% gather(year,population,X1790:X2010) %>% mutate(year = as.numeric(gsub("X","",year)))
-
-
 ```
 
 5. Use the `?` operator to read about the function `write.csv`. Save the result to disk: we'll be exploring it more next week.
 
 ``` {r}
-
-tidied = a %>% gather(year,population,X1790:X2010) %>% mutate(year = as.numeric(gsub("X","",year)))
-
-write.csv(file="data/tidied.csv",tidied)
 
 ```
 
