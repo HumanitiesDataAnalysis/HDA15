@@ -1,7 +1,7 @@
 ---
 title: "Analyzing Data"
 author: "Ben Schmidt"
-date: "2015-01-27"
+date: "2015-01-29"
 output: pdf_document
 ---
 
