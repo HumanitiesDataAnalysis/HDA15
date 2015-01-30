@@ -13,4 +13,4 @@ Use materials with permission. I'm open sourcing it, but this isn't under a CC l
 The data in the data/ directory comes from a variety of places. I acknowledge, in particular.
 
 * The Stanford Center for Spatial and Textual Analysis (CESTA) for the population data;
-* The 
+* The New Bedford Whaling Museum for their data on ship's crews.
