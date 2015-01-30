@@ -1,3 +1,10 @@
+---
+title: Regular Expressions
+date: January 15, 2015
+author: Benjamin Schmidt
+
+---
+
 Regular Expressions
 ===================
 
