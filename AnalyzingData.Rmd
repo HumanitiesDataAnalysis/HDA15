@@ -8,7 +8,7 @@ output: pdf_document
 
 ```{r global_options, include=FALSE}
 library(knitr)
-opts_chunk$set(eval=FALSE, warning=FALSE, message=FALSE)
+opts_chunk$set(eval=TRUE, warning=FALSE, message=FALSE)
 ```
 
 
