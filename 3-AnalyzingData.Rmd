@@ -209,6 +209,13 @@ The other way is by Googling. One of R's major flaws is that the name is so gene
 
 ### Exercises: filtering and summarizing
 
+Beforehand: you may need to update the crews data to include some new information.
+
+``` {r}
+library(dplyr)
+crews = crews %>% mutate(year=gsub(".*(\\d{4}).*","\\1",ApproximateDeparture))
+```
+
 1. Using summarize, find the minimum age in the set. (Remember, the function to find a minimum is `min`.)
 
 ``` {r Exercise 1a}
