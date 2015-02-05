@@ -33,12 +33,262 @@ The name of this package is `ggplot2`. (`gg` for "Grammar of graphics": `2` beca
 
 ## The philosophy of `ggplot`
 
-`ggplot` uses a philosophy of chaining that should be familiar from your work. 
+`ggplot` uses a philosophy of chaining that should be familiar from your work with dplyr. But while `dplyr` is a chain in which order is paramount, `ggplot` is a little more flexible. You have to create a plot using the `ggplot()` function: but then you can add elements to it in an order that's not always strictly proscribed. But in creating a plot, you'll certainly have to do each of the following (though sometimes just implicitly):
+
+
+### 1. Selecting a data source:
+
+The function `ggplot` generally takes as an argument a single element. For example: if we want to plot the changing urban population of the United States, we can use functions from dplyr to collect it. Then we can create an object `base_plot` that contains the beginnings of the plot.
+
+
+``` {r}
+populations=read.csv("data/tidied.csv") %>% group_by(year) %>% filter(population>0) %>% summarize(USpop = sum(population))
+
+base_plot = ggplot(populations)
+```
+
+
+Note that you can pipe this straight in, if you wish: 
+
+``` {r}
+base_plot = read.csv("data/tidied.csv") %>% group_by(year) %>% summarize(pop = sum(population)) %>% ggplot()
+```
+
+When using the `ggvis`, the successor to `ggplot2`, this is the preferred format.
+
+### 2. Choosing a "geometry" (or plot type)
+
+The next step is choose a particular way to plot the data. This is called a "geometry" in ggplot, and it corresponds roughly to the type of plot that you'll be using. There are many different types of plots that make sense: line charts, bar charts, maps, histograms, and so forth.
+
+For this example, we'll make a simple line chart.
+
 
 ``` {r}
 
+base_plot + geom_line()
 
 ```
+
+
+This still doesn't work, because the program doesn't know *what it's plotting.* 
+
+### 3. Setting an aesthetic mapping.
+
+As Lev Manovich says, plots work by reducing real elements to abstractions. The "aesthetic" component of a ggplot graph is the list of abstraction you want to enforce. Each particular geom will require or use certain different types of data. A line chart plots one thing on the x axis, and another on the y.
+
+We set this in ggplot using the function `aes`. `aes` specifies the aesthetic mapping. So make a linechart of population over time, we simply tell it that y should be population, and x should be time.
+
+``` {r include=TRUE}
+
+ggplot(populations) + geom_line() + aes(x=year,y=USpop)
+
+```
+
+### 4. Setting scales
+
+Scales are some of the most important elements of any chart. For humanities data, in most cases a logarithmic distribution fits the data better than a straightforward linear one. (Log distributions assume that rather each tick of the axis indicating an increase of a fixed amount, 
+
+
+
+``` {r include=TRUE}
+
+ggplot(populations) + geom_line() + aes(x=year,y=USpop) + scale_y_log10()
+
+```
+
+Other sorts of scales will take other options. For example, a color scale might benefit from manually specifying the colors that you're interested in.
+
+### 5. Setting Facets.
+
+Edward Tufte extols "small multiples." In ggplot, this is possible through the `facet` functions: `facet_grid` (when you have both x and y aspects to facet off of) and `facet_wrap` (when you only want to facet off a single thing.)
+
+Our chart of US urban population can accomplish the same thing for each individual states by first grouping by state in the creation field, and then by faceting by state. Try adding "color" to the aesthetic on one of the variables to make it more attractive.
+
+
+``` {r}
+
+tidied = read.csv("data/tidied.csv") %>% filter(population>0)
+  
+tidied %>% group_by(ST,year) %>% summarize(pop = sum(population)) %>% ggplot() + 
+  geom_line() + aes(x=year,y=pop) + scale_y_log10() + facet_wrap(~ST)
+
+```
+
+### 6. More esoteric settings
+
+#### 1. Choosing coordinate systems.
+
+For the most part, you'll probably be plotting in cartesian space--that is to say, your coordinates will look like graph paper.
+
+Cartesian is not the only coordinate system, though. Two other particularly important ones built into `ggplot` are `coord_polar` and `coord_map`. 
+
+* `coord_polar` uses polar coordinates: instead of positioning an element by x and y, it positions it by angle and distance. Some quite famous charts use it, such as Florence Nightingale's Coxcomb charts.
+
+![../images/nightingale.jpg]
+
+* `coord_map` allows you, with the `mapproj` package, to make a wide variety of maps in R that project latitude and longitude in ways other than the standard projection system.
+
+
+Because it will form the basis for further work, here is code to plot 
+
+``` {r}
+cities = read.csv("data/tidied.csv") %>% filter(year==1950)
+cities %>% filter(LON>0)
+head(cities)
+ggplot(cities) + geom_point(aes(x=LON,y=LAT,size=population,color=ST)) + coord_map()
+
+```
+
+
+#### 2. Labels
+
+Charts should have legends.
+
+The `labs` function lets you specify those.
+
+#### 3. Themes.
+
+You can specify the appearance of grid lines, legend position, and all sorts of other elements through the theme argument. Online documentation may be necessary for the time being.
+
+# Exploring different geoms
+
+We're going to explore these geoms with a cleaned version of the `crews` dataset.
+
+``` {r}
+crews = read.csv("data/CrewlistCleaned.csv")
+```
+
+## Histograms
+
+For statisticians, the most basic chart is a histogram, which shows how frequent a single variable is at different levels. We can plot the height of our sailors by adding a new _layer_ to the plot: that consists of the function `geom_histogram` to build a histogram, and the aesthetic `aes(x=height)` to tell it we want a histogram about the distribution of height.
+
+```{r withALayer}
+
+ggplot(crews) + geom_histogram(aes(x=height))
+
+```
+
+That might seem like a lot of work, but the advantage is that once a plot is created, we can simply swap out the aesthetic to plot against--say--`date` or `age` as well. 
+
+```{r moreHistograms}
+ggplot(crews) + geom_histogram(aes(x=as.Date(date)))
+ggplot(crews) + geom_histogram(aes(x=Age))
+```
+
+
+## Barplots
+
+When you use a histogram with a _categorical_ variable, it gives you a barplot, as when we look at the types of ships in the sample.
+
+```{r categoricalHistograms}
+ggplot(crews) + geom_histogram(aes(x=Rig))
+ggplot(crews) + geom_bar(aes(x=Rig))
+```
+
+A barplot is different, though, because we might want to add some more variables in. For example, we can add another aesthetic for 'fill' (which gives the color of the bars):
+
+``` {r}
+ggplot(crews) + geom_bar(aes(x=Rig,fill=Rig))
+```
+
+
+
+That's a nice chart. But we could also change it so the x-axis contains to information by just setting it to an empty string, and the bars will appear stacked on top of each other.
+``` {r toppedBar}
+ggplot(crews) + geom_bar(aes(x="",fill=Rig))
+```
+
+That's not as good a way of visualizing the information: you have to compare the size of chunks against each other. But if we make one more tweak—setting the y axis to a polar coordinate system—suddenly it becomes very familiar:
+
+``` {r}
+ggplot(crews) + geom_bar(aes(x="",fill=Rig))
+
+ggplot(crews) + geom_bar(aes(x="",fill=Rig)) + coord_polar("y")
+```
+
+
+It's a pie chart! Since Edward Tufte, pie charts are universally reviled; the grammar of graphs is describing them here as "a stacked bar chart plotted in a polar coordinate system." 
+
+## Scatterplots
+
+For exploratory data analysis, the scatterplot is to multivariate data what the histogram is to single-variable data.
+
+
+Summary stats are useful, but sometimes you want to compare two types of charts to each other. The next basic chart to use is a scatterplot: in ggplot, you can get this by using "geom_point." Suppose, for example, we want to compare height against age.
+
+``` {r}
+ggplot(crews) + geom_point(aes(x=Age,y=height),alpha=.1)
+```
+
+
+``` {r}
+ggplot(crews) + geom_point(aes(x=Age,y=height,color=Rig))
+```
+
+
+## Density Plots
+
+In this case, that doesn't give you all that much useful: but it points you to another function, "stat_density," which itself points to "density," the basic function: there you can see that 'adjust' is what sets the smoothing bandwith.
+
+```{r aboutStatDensity}
+?stat_density
+```
+
+
+Just do some survey plots on the data we have. (You might need the hexbin package for this)
+
+``` {r}
+
+ggplot() + 
+  geom_point(size=1,alpha=.2,position=position_jitter(h=1/12,w=1),color='red') + 
+  labs(title='Height in feet') + 
+  aes(x=Age,y=height) +
+  stat_summary(fun.y='mean',geom='point') + 
+  geom_smooth()
+
+ggplot(crews %>% filter(height>36,height<7*12),aes(y=height/12,x=Age)) + labs(title='Height in feet') + geom_hex()+ 
+  scale_fill_gradientn("Number of sailors",trans='log10',colours=heat.colors(10))
+
+
+crews %>% filter(height>36,height<7*12) %>% ggplot() + aes(y=height/12,x=as.Date(date))+ geom_point(size=2,alpha=.5) + labs(title='Height in feet') + geom_smooth() + xlim(as.Date("1860-1-1"),as.Date("1930-1-1"))
+
+
+ggplot(crews[crews$Hair!="",]) + geom_bar(aes(x=Hair)) + coord_flip()
+
+
+```
+
+## Text Scatterplots
+
+
+For humanities data analysis, text scatterplots are particularly important.
+
+
+For them, you can use the `geom_text` function. It works just like `geom_point`, but requires an additional aesthetic: `label`. 
+
+What does this chart show? What variables (if any) do you think are driving this chart?
+
+``` {r}
+
+crews %>% group_by(Residence) %>% mutate(count=n()) %>% filter(count>50) %>% summarize(averageHeight = mean(height,na.rm=T),averageYear = mean(as.Date(date),na.rm=T)) %>% ggplot() + geom_text(aes(y=averageHeight,x=averageYear,label=Residence))
+```
+
+Exercises
+---------
+
+
+1. Going back to dplyr: Make a map of the United States in which each city is colorized by the year that it had its maximum population according to the census data.
+
+``` {r Exercise 1}
+
+
+```
+
+2. Using the `rank` function and `facet`, make a `geom_text` plot that ranks the top ten cities for each census.
+
+
+
+
 
 
 ## Exercises
@@ -46,12 +296,12 @@ The name of this package is `ggplot2`. (`gg` for "Grammar of graphics": `2` beca
 
 Review:
 
-For a review question, we're going to introduce a new set of data
+For a review question, we're going to introduce a new set of data: bibligraphic information.
 
-The bibliography data
+The bibliography data comes from the open library. It's in three forms: decide which you want to use based on your interests and your computer's power.
 
-``` {r Exercise }
+1. Test, and post online, some questions about the bibliographic dataset. Engage in exploratory data analysis.
 
 
+2. Use the state field to make some merges.
 
-```
