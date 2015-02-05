@@ -1,0 +1,57 @@
+---
+title: "Visualizing Data: the basics"
+author: "Ben Schmidt"
+date: "2015-02-05"
+output: pdf_document
+---
+
+
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(eval=FALSE, warning=FALSE, message=FALSE)
+```
+
+# Why Visualize?
+
+Graphic presentation is an increasingly important element of humanities scholarship. For exploratory data analysis, visualization has long been seen as the most useful way of working with data. As we saw with the information in "Anscombe's quartet," it is quite frequent that patterns which can be quite difficult to describe mathematically are immediately obvious when plotted with the proper specifications.
+
+Visualization is also an important element of scholarly **communication**. As scholars like John Theibault, etc. have recently argued, visualizations can themselves be an element of historical arguments. (As we'll read next week, there are reasons to be concerned that visualizations may interpose scientisitc forms of reading).
+
+This work is the heir to a long history of non-lexical representations of history. Graphic visualization is occasionally described as an offshoot of the sciences. In fact, the tradition is probably more closely connected to the historical and social sciences than to any of the "hard" sciences: the early history of data visualization and thematic cartography are mostly attempts to bring visual order to social and historical systems.^[Grafton and Rosenberg; Playfair; Friendly; DuBourg.]
+
+The question of whether an image has "an argument" is a thorny one; the question of whether an image can *provide evidence* should be much less so.
+
+# The Grammar of Graphics
+
+In `dplyr`, we have already learned a "grammar of data analysis." It provides a variety of functions for describing transformations you wish to make to data; to combine them, to aggregate, to filter, and so forth. The *content* of those transformations is left up to the user; this is why Wickham uses the metaphor of a "generative grammar" to describe it. A grammar gives rules about construction that make it possible to describe operations much more easily than might be otherwise possible.
+
+> Historical note: this idea of a generative grammar as a live influence in general academic culture goes back to linguistics and particularly Noam Chomsky, who made his first career describing the underlying rules of language. (Chomsky, in addition to his current role as a critic of modern capitalism, continues to defend his theories inside linguistics; his 2011 exchanges with Peter Norvig, the chief research scientist at Google, over the validity of the knowledge derived from machine learning techniques are well worth reading.) The insights were useful outside linguistics: the conductor Leonard Bernstein gave the Charles Eliot Norton lectures on aesthetics at Harvard in the early 1970s by applying Chomskyian techniques to 
+
+This idea of a grammar was most influentially described in the statistical literature in 199X by Leland Wilkinson in his book "the grammar of graphics." We'll be exploring data visualization, at first, in the context of an implementation of that grammar also by Hadley Wickham.
+
+The name of this package is `ggplot2`. (`gg` for "Grammar of graphics": `2` because it is version 2 of the software.) I'll be referring to it as simply `ggplot`, because that is the name of the function used to create the core object.
+
+## The philosophy of `ggplot`
+
+`ggplot` uses a philosophy of chaining that should be familiar from your work. 
+
+``` {r}
+
+
+```
+
+
+## Exercises
+
+
+Review:
+
+For a review question, we're going to introduce a new set of data
+
+The bibliography data
+
+``` {r Exercise }
+
+
+
+```
