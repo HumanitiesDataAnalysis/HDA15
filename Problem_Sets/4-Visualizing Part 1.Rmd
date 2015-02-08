@@ -42,7 +42,13 @@ The function `ggplot` generally takes as an argument a single element. For examp
 
 
 ``` {r}
-populations=read.csv("data/tidied.csv") %>% group_by(year) %>% filter(population>0) %>% summarize(USpop = sum(population))
+library(dplyr)
+library(magrittr)
+library(ggplot2)
+populations=read.csv("data/tidied.csv") %>% 
+  group_by(year) %>% 
+  filter(population>0) %>% 
+  summarize(USpop = sum(population))
 
 base_plot = ggplot(populations)
 ```
@@ -78,9 +84,14 @@ As Lev Manovich says, plots work by reducing real elements to abstractions. The 
 
 We set this in ggplot using the function `aes`. `aes` specifies the aesthetic mapping. So make a linechart of population over time, we simply tell it that y should be population, and x should be time.
 
+You may need to type `as.numeric(year)` instead of year.
+
 ``` {r include=TRUE}
 
-ggplot(populations) + geom_line() + aes(x=year,y=USpop)
+ggplot(populations) + 
+  geom_line(colour="blue") + 
+  aes(x=year,y=USpop) + 
+  geom_point(size=10,alpha=.6,color="blue")
 
 ```
 
@@ -88,11 +99,12 @@ ggplot(populations) + geom_line() + aes(x=year,y=USpop)
 
 Scales are some of the most important elements of any chart. For humanities data, in most cases a logarithmic distribution fits the data better than a straightforward linear one. (Log distributions assume that rather each tick of the axis indicating an increase of a fixed amount, 
 
-
-
 ``` {r include=TRUE}
 
-ggplot(populations) + geom_line() + aes(x=year,y=USpop) + scale_y_log10()
+ggplot(populations) + 
+  geom_line() + 
+  aes(x=year,y=USpop) + 
+  scale_y_continuous(trans="log")
 
 ```
 
@@ -109,8 +121,14 @@ Our chart of US urban population can accomplish the same thing for each individu
 
 tidied = read.csv("data/tidied.csv") %>% filter(population>0)
   
-tidied %>% group_by(ST,year) %>% summarize(pop = sum(population)) %>% ggplot() + 
-  geom_line() + aes(x=year,y=pop) + scale_y_log10() + facet_wrap(~ST)
+tidied %>% 
+  group_by(ST,year) %>% 
+  summarize(pop = sum(population)) %>% 
+  ggplot() + 
+  geom_line() + 
+  aes(x=year,y=pop) + 
+  scale_y_log10() + 
+  facet_wrap(~ST)
 
 ```
 
@@ -133,9 +151,12 @@ Because it will form the basis for further work, here is code to plot
 
 ``` {r}
 cities = read.csv("data/tidied.csv") %>% filter(year==1950)
+
 cities %>% filter(LON>0)
 head(cities)
-ggplot(cities) + geom_point(aes(x=LON,y=LAT,size=population,color=ST)) + coord_map()
+ggplot(cities) + 
+  aes(x=LON,y=LAT,size=population,color=ST) + 
+  geom_point()
 
 ```
 
@@ -289,8 +310,6 @@ Exercises
 
 
 
-
-
 ## Exercises
 
 
@@ -300,8 +319,24 @@ For a review question, we're going to introduce a new set of data: bibligraphic 
 
 The bibliography data comes from the open library. It's in three forms: decide which you want to use based on your interests and your computer's power.
 
-1. Test, and post online, some questions about the bibliographic dataset. Engage in exploratory data analysis.
+1. The following will read in a set of data called "titles." 
 
+``` {r}
+titles = read.table("data/booktitlesShort.tsv",sep="\t",comment.char = "",quote="",stringsAsFactors = F) %>% as.tbl
 
-2. Use the state field to make some merges.
+```
+
+3. The function `nchar` gives the number of characters in a string. Pipe that `titles` data frame into a `dplyr` `mutate` function to add a new variable, `title_length`, that is the number of characters in the title. Choose an appropriate way to plot this against at least two of the three following variables; "year," "language", and "state." Don't plot too many points: try using a filter operation to reduce the number of dimensions for categorical variables. You might want to plot only the three largest states, for example.
+
+``` {r}
+
+```
+
+4. Test some other questions about the bibliographic dataset: that is to say, engage in exploratory data analysis! We'll talk about these in class, and you'll write them up for next week.
+
+``` {r}
+
+```
+
+5. In the process of doing that: use the state field to make some merges.
 
