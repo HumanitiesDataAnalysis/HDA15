@@ -338,5 +338,5 @@ titles = read.table("data/booktitlesShort.tsv",sep="\t",comment.char = "",quote=
 
 ```
 
-5. In the process of doing that: use the state field to make some merges.
+5. (In the process of doing that, optionally: use the state field to make some merges.)
 
