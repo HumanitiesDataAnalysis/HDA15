@@ -1,0 +1,84 @@
+---
+title: "Advanced Data visualization: Smoothing, multiple data, and APIs"
+author: "Ben Schmidt"
+date: "2015-02-05"
+output: pdf_document
+---
+
+
+```{r global_options, include=FALSE}
+library(knitr)
+opts_chunk$set(eval=FALSE, warning=FALSE, message=FALSE)
+```
+
+
+Our introduction to data visualization touched on how to work with data visualizations involving a single data frame. Sometimes in the humanities, this will indeed be all that you need to work with. But it's also incredibly frequent that you'll need to work with outside sources of information as well.
+
+Good humanities data visualizations may be much more complex. They might involve unifying sources from a variety of different datasets.
+
+They also may involve plotting several different pieces of data at once.
+
+And finally, when we work with 
+
+
+# More ggplot practice.
+
+1. On the (unnumbered) penultimate page of the introduction, Drucker (mis)describes a chart of heights produced by Francis Galton of height. The data for the chart is in the repo online.  Produce that plot as both a scatterplot (perhaps using the argument `position="jitter"` to `geom_point`), and in the numeric version that Galton/Pearson produced. (Instead of including axes of error, try using the function `geom_smooth` on the scatterplot. What happens?)
+
+``` {r}
+
+```
+
+# Working with APIs and understanding packages.
+
+Different tools often expose their resources over the web with something called an API--and application programming interface. This lets you pull data directly from a site without having to use a web browser.
+
+We'll explore some of our textual data with the API for the Digital Public Library of America.
+
+
+
+This package doesn't exist on the main CRAN repository of approved packages, so you'll have to install a new R package called `devtools` that lets you install directly from GitHub.
+
+Two of the most important bibliographic APIs are from the DPLA (Digital Public Library of America) and Hathi Trust.
+
+## The DPLA API
+
+
+``` {r}
+install.packages("devtools")
+devtools::install_github("ropensci/rdpla")
+library('rdpla')
+?items
+rdpla::get_key("bmschmidt@gmail.com")
+
+#key = 'your key here'
+
+now = items(q="Charles Dickens",key=key,facets=c("sourceResource.spatial.state","sourceResource.spatial.country"))
+
+head(now)
+
+```
+
+
+This will give you a private key. You should never enter these into code that you save, since it's like a password.
+
+
+
+## The HathiTrust API
+
+At the moment, the ROpenScie interface to the Hathi Trust set is a bit less powerful. Just be aware of it.
+
+``` {r}
+devtools::install_github("ropensci/hathi")
+library("hathi")
+a = hathi_bib(isbn="9780563533382")
+a
+```
+
+
+
+
+
+# Merging
+
+

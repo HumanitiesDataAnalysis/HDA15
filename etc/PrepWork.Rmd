@@ -1,0 +1,43 @@
+---
+title: "Prep"
+author: "Ben Schmidt"
+date: "2/17/2015"
+output: html_document
+---
+
+This is some code to produce the examples.
+
+
+To make the sqlite database of titles:
+
+``` {r}
+#install.packages("RSQLite")
+library(dplyr)
+library("RSQLite")
+#input = src_mysql("presidio","localhost",user = "bschmidt",password=stdin())
+
+a = tbl(input,"open_editions")
+
+data = a %>% collect
+
+data %>% glimpse
+
+smaller  = data %>% select(bookid,language,lccn,ocaid,oclc_numbers,publish_country,year,publish_places,publishers,title,authorbirth,author,nwords,country,state,lc0,lc1,lc2,aLanguage) %>% filter(nwords>0,year<1922,year>1800,aLanguage=="eng")
+
+library(RSQLite)
+apply(smaller,2,object.size)
+db <- dbConnect(SQLite(), dbname="data/titles.sqlite")
+dbWriteTable(db,"catalog",smaller %>% as.data.frame,overwrite=TRUE)
+
+```
+
+
+``` {r}
+
+data = src_sqlite("data/titles.sqlite") %>% tbl("catalog")
+
+data %>% inner_join(data %>% count(publish_places) %>% filter(n>1000)) %>% group_by(publish_places,year) %>% summarize(books=n())
+
+data %>% group_by(publish_places) %>% 
+
+```
