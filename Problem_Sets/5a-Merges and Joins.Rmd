@@ -1,0 +1,56 @@
+---
+title: "Merge Author Data"
+author: "Ben Schmidt"
+date: "February 24, 2015"
+output: html_document
+---
+
+How do you merge in author data to our set?
+
+I've added a file to the server that contains labels for library of congress classifications.
+
+```{r}
+library(dplyr)
+classifications = read.table("data/LOC_classification.tsv",sep="\t",header=T) %>% as.tbl
+
+classifications %>% glimpse
+```
+
+This wants to work with our existing title data, which also has a `lc1` field.
+
+``` {r}
+shortTitles = read.table("data/booktitlesShort.tsv",sep="\t",quote="",comment.char = "")
+
+head(shortTitles)
+```
+
+This can be done with the `inner_join` function of dplyr, which by default merges two tables based on their shared column names.
+
+``` {r}
+
+labelled = shortTitles %>% inner_join(classifications)
+
+```
+
+Note that `inner_join` drops rows that aren't contained in both tables. Only about a third of the books in the `shortTitles` folder have an lc1 that matches the classifications field.
+
+``` {r}
+nrow(shortTitles)
+nrow(labelled)
+
+```
+
+To see what's being dropped, you can use the `anti_join` function that shows only elements in the first frame that are unmatched in the second one.
+
+
+``` {r}
+
+shortTitles %>% anti_join(classifications) %>% sample_n(30) %>% select(lc1)
+
+```
+
+If you want to keep all elements from the left frame and just put `NA` values into the various fields defined by the right one, you can use the `left_join` function which prioritizes things from the left. (`outer_join` privileges both fields, and `right_join` privileges the second one.)
+
+``` {r}
+shortTitles %>% left_join(classifications) %>% nrow
+```
