@@ -17,7 +17,7 @@ opts_chunk$set(eval=TRUE, warning=FALSE, message=FALSE)
 
 ```
 
-2. Certain words always appear in the same immediate context: for example, "dearth" is almost always followed by the word "of." Use the SOTU concordance frame to find words that are most often preceded by the same word before them as a *share* of the times they appear. (Note the general strategy in the probability section for calculating a local probability: group by different elements and use the `n()` function to see how often particular combinations appear.)
+2. Certain words always appear in the same immediate context: for example, "dearth" is almost always followed by the word "of." Use the SOTU concordance frame to find words that are frequently preceded by the same word. Raw counts will be misleading (you'll just get a lot of nouns preceded by "the", so express the relationships as a *ratio* of the number of occurrences of the sequence "word1 word2" to the uses of "word2" on its own. (Note the general strategy in the probability section for calculating a local probability: group by different elements and use the `n()` function to see how often particular combinations appear. You may also want to filter to words that appear more than 5 or 10 times.)
 
 
 ``` {r}
