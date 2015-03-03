@@ -97,31 +97,11 @@ The most capacious regex of all is `.*` which tells the parser to match "any cha
 
 For most cases, `*`, `+`, or `?` will work to capture an expression. But if you want to specify a particular number of times, you can use angle brackets. So to find Santa Claus, you could type `(Ho){3}`.
 
-##Exercises
-Download the dictionary from benschmidt.org/words.txt and load it into a text editor.
-
-1. The word "picalilli" contains five consecutive "l" or "i" letters. What word contains 6 consecutive "i" or "ls"?
-2. What word uses all five vowels, in alphabetical order?
-
 
 ## Replacements
 
 The syntax for replacing a regex will change from language to language, but the easiest substitution is to replace a regex by a string. I'll use here perl syntax, which gives the name of the operation (`s/` for substitute, `m/` for "match") separated by forward slashes. More recent languages or text editors may have a different syntax, but the important thing is that any substituting regex has two primary parts; the field to be matched, and its substitution.
 
-
-### Exercises:
-
-1. Design a regex that replaces the text strings `"NU"` and `"NEU"` with the word "Northeastern."
-
-2. Sometimes documents have excessive spaces in them. Write a regex that reduces any string of spaces down to just one.
-
-3. Write a regex that changes the spelling of all words in a document so that they conform to the rule "I before e, except after c."
-
-4. Michael Witmore writes for this week:
-
-	> One hundred years from now, the available computational objects may be related to one another in new ways. I can only imagine what these are: every fourth word in every fourth document, assuming one could stabilize something like “word length” in any real sense.
-
-	Write a find-replace regex that will reduce a text to every fourth word in every fourth sentence of a given text. (Download them from Project Gutenberg). If you have a Mac, you might want to come to office hours and figure out how to do this with perl.
 
 Escape characters.
 ==================
