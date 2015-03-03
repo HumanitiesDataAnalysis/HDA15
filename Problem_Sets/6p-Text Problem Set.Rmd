@@ -19,8 +19,16 @@ opts_chunk$set(eval=TRUE, warning=FALSE, message=FALSE)
 
 2. Certain words always appear in the same immediate context: for example, "dearth" is almost always followed by the word "of." Use the SOTU concordance frame to find words that are frequently preceded by the same word. Raw counts will be misleading (you'll just get a lot of nouns preceded by "the", so express the relationships as a *ratio* of the number of occurrences of the sequence "word1 word2" to the uses of "word2" on its own. (Note the general strategy in the probability section for calculating a local probability: group by different elements and use the `n()` function to see how often particular combinations appear. You may also want to filter to words that appear more than 5 or 10 times.)
 
+This will be similiar to the transitions problem, but working in the opposite direction. So it may be easier to start with the code from the transitions below--but note that this gives the chance that word1 is followed by word2, and what you're looking for is the chance that word2 is preceded by word1 (which is a difference question--"of" is not usually preceded by "dearth.")
 
 ``` {r}
+
+transitions = allSOTUs %>% 
+  group_by(word) %>% 
+  mutate(word1Count=n()) %>% 
+  group_by(word,word2) %>%
+  summarize(chance = n()/word1Count[1])
+
 
 ```
 
