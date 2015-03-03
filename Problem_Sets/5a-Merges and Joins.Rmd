@@ -12,7 +12,6 @@ I've added a file to the server that contains labels for library of congress cla
 ```{r}
 library(dplyr)
 classifications = read.table("data/LOC_classification.tsv",sep="\t",header=T) %>% as.tbl
-
 classifications %>% glimpse
 ```
 
@@ -32,7 +31,7 @@ labelled = shortTitles %>% inner_join(classifications)
 
 ```
 
-Note that `inner_join` drops rows that aren't contained in both tables. Only about a third of the books in the `shortTitles` folder have an lc1 that matches the classifications field.
+Note that `inner_join` drops rows that aren't contained in both tables. Only about a third of the books in the `shortTitles` folder have an lc1 that matches the classifications field. The `nrow` function tells how many rows a datafraem has: here you can see that joining it to the genre lookup loses almost two-thirds the entries.
 
 ``` {r}
 nrow(shortTitles)
@@ -44,9 +43,7 @@ To see what's being dropped, you can use the `anti_join` function that shows onl
 
 
 ``` {r}
-
 shortTitles %>% anti_join(classifications) %>% sample_n(30) %>% select(lc1)
-
 ```
 
 If you want to keep all elements from the left frame and just put `NA` values into the various fields defined by the right one, you can use the `left_join` function which prioritizes things from the left. (`outer_join` privileges both fields, and `right_join` privileges the second one.)
