@@ -211,9 +211,10 @@ unique %>% filter(year>1861,year<=1865) %>% View
 # Probabilities
 
 ``` {r}
-allSOTUs %<>% as.tbl %>% filter(word!="")
+library(magrittr)
+allSOTUs  = allSOTUs %>% as.tbl %>% filter(word!="")
 
-allSOTUs %<>% mutate(word2=lead(word,1),word3=lead(word,2))
+allSOTUs = allSOTUs %>% mutate(word2=lead(word,1),word3=lead(word,2))
 
 transitions = allSOTUs %>% 
   filter(year>1912) %>% 
@@ -257,6 +258,7 @@ transitions = allSOTUs %>%
   mutate(chance = n()/word1Count,bigramCount=n()) %>% 
   group_by(word,word2,word3) %>% 
   summarize(trigramChance = n()/bigramCount[1])
+
 ```
 
 Then, we'd make the "find next word" function work over spans of two words instead of one.

@@ -47,9 +47,21 @@ transitions = allSOTUs %>%
 ``` {r}
 
 concordance = function(frame,n) {
-  #Answer here.
+  # Takes as input a data.frame with a column "word," and which is an ordered representation of a text when read top to bottom.
+  for (i in 1:n) {
+    message(i)
+    frame[,paste0('word',i)] = lead(frame$word,i-1)
+  }
+  frame
 }
 
+f = concordance(allSOTUs,10)
+
+library(tidyr)
+
+f %>% filter(word5=="freedom") %>%
+  gather(position,token,-year) %>% 
+  group_by(token) %>% summarize(count=n())
 ```
 
 4. Copy and paste together the various functions we wrote to read in all the files of the State of the Unions: rewrite it as a function `collect_directory_into_text_frame` that will take a directory name, and then read in all the text files in it into a data.frame. A sample folder of works by Charles Dickens is supplied. But you can (and should) be able to run it on any set of texts that you like. Project Gutenberg is a good source of free public domain texts, but there are many others out there.
