@@ -13,7 +13,7 @@ folderIntoTD = function (foldername,normalized=F) {
     SOTU = data.frame(word=words,filename=file %>% gsub(foldername,"",.) %>% gsub("/","",.) %>% gsub(".txt","",.),stringsAsFactors = FALSE)  
     return(SOTU)
   }
-  
+ 
   SOTUS = list.files(foldername,full.names = TRUE)
   
   #SOTUS = SOTUS[grep("/19[89]|/20[10]",SOTUS)]
@@ -50,6 +50,7 @@ folderIntoTD = function (foldername,normalized=F) {
 #'
 
 library(RJSONIO)
+
 bookworm = function(
   host="benschmidt.org",
   database="SOTUgeo2",
@@ -107,7 +108,20 @@ bookworm = function(
 }
 
 
+bookwormTDMatrix = function(cutoff=2,...) {
+  data = bookworm(...,counttype="WordsPerMillion") %>% group_by(unigram)
 
+  if (cutoff>1) {
+    data = data %>% group_by(unigram) %>% filter(n()>cutoff) %>% ungroup
+  }  
+  
+  names(data) = paste0("meta_",names(data))
+  
+  data %>% spread(meta_unigram,meta_WordsPerMillion,fill=0) %>% as.tbl
+  
+  
+  
+}
 
 
 
@@ -142,7 +156,7 @@ dunning.log = function(set1,set2) {
   names(dunning) = apply(
     wordlist[,names(set1)[grep("[Cc]ount",names(set1),invert=T),drop=F],drop=F],1,paste,collapse=" ")
   
-  data.frame(word = names(dunning),largerIn = ifelse(dunning>0,"set1","set2"),dunning=abs(dunning))
+  data.frame(word = names(dunning),largerIn = ifelse(dunning>0,"set1","set2"),dunning=abs(dunning),group1=wordlist$count.x,group2=wordlist$count.y)
 }
 
 
