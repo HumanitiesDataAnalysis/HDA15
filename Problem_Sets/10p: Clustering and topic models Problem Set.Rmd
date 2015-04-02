@@ -1,0 +1,12 @@
+---
+title: "10p-Clustering and Topic Models Problem Set"
+author: "Ben Schmidt"
+date: "4/2/2015"
+output: html_document
+---
+
+1.
+
+
+2. 
+
