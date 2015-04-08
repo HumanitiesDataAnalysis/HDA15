@@ -1,14 +1,10 @@
 ---
-title: "Texts, Functions, and Probabilities: Problem Set"
+title: "Texts, Functions, and Probabilities"
 author: "Ben Schmidt"
-date: "February 19, 2015"
+date: "February 15, 2015"
 output: pdf_document
 ---
 
-```{r global_options, include=FALSE}
-library(knitr)
-opts_chunk$set(eval=TRUE, warning=FALSE, message=FALSE)
-```
 
 1. Find a feature in the "titles" or "whaling crews" data set for which Zipf's law holds. Plot it using the text element we've used and `geom_point` which should present a clearer path.
 
@@ -26,9 +22,8 @@ This will be similiar to the transitions problem, but working in the opposite di
 transitions = allSOTUs %>% 
   group_by(word) %>% 
   mutate(word1Count=n()) %>% 
-  group_by(word,word2) %>%
-  summarize(chance = n()/word1Count[1])
-
+  group_by(word,word2) %>% filter(n()>7) %>%
+  summarize(chance = n()/word1Count[1],count=n())
 
 ```
 
@@ -61,7 +56,7 @@ Likewise, if you can wrangle the code for this from a classmate, feel free--if y
 ``` {r}
 
 collect_directory_into_text_frame = function(dirname) {
-  
+   
 }
 
 ```

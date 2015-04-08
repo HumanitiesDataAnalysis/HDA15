@@ -8,7 +8,11 @@ output: pdf_document
 
 ```{r global_options, include=FALSE}
 library(knitr)
-opts_chunk$set(eval=FALSE, warning=FALSE, message=FALSE)
+library(magrittr)
+library(ggplot2)
+library(dplyr)
+
+#opts_chunk$set(eval=FALSE, warning=FALSE, message=FALSE)
 ```
 
 # Texts
@@ -121,7 +125,9 @@ lead(numbers,1)
 By using `lag` on a character vector, we can neatly align one series of text with the words that follow.
 
 ``` {r}
-SOTU %>% mutate(word2 = lead(word,1)) %>% head
+twoColumns = SOTU %>% mutate(word2 = lead(word,1)) %>% head
+
+
 ```
 
 
@@ -191,7 +197,7 @@ all = data.frame(filename=SOTUS,stringsAsFactors=FALSE) %>%
   do(readSOTU(.$filename))
 ```
 
-Steve Ramsay writes about finding words that are unique to each individual author. We can do that to find words that only appeared in a single state of the union. We'll put in a quick lowercase function so as not to worry about words.
+Steve Ramsay writes about finding words that are unique to each individual author. We can do that to find words that only appeared in a single state of the union. We'll put in a quick lowercase function so as not to worry about capitalization.
 
 ``` {r}
 allSOTUs %>% 
@@ -204,23 +210,26 @@ unique = allSOTUs %>%
   distinct(word,year) %>% 
   group_by(word) %>% filter(n()==1)
 
-unique %>% filter(year>1861,year<=1865) %>% View
+#unique %>% filter(year>1861,year<=1865) %>% View
 
 ```
 
 # Probabilities
 
 ``` {r}
-allSOTUs %<>% as.tbl %>% filter(word!="")
+library(magrittr)
+allSOTUs = allSOTUs %>% as.tbl %>% filter(word!="")
 
-allSOTUs %<>% mutate(word2=lead(word,1),word3=lead(word,2))
+allSOTUs = allSOTUs %>% mutate(word2=lead(word,1),word3=lead(word,2))
 
 transitions = allSOTUs %>% 
   filter(year>1912) %>% 
   group_by(word) %>% 
   mutate(word1Count=n()) %>% 
-  group_by(word,word2) %>% 
+  group_by(word,word2) %>%
   summarize(chance = n()/word1Count[1])
+
+
 ```
 
 
@@ -235,9 +244,11 @@ findNextWord = function(current) {
 
 ``` {r}
 word = "I"
-while(TRUE) {
-  message(word)
+output = c(word)
+while(length(output) < 30) {
+  
   word = findNextWord(word)
+  output = c(output,word)
 }
 
 ```
