@@ -31,9 +31,16 @@ folderIntoTD = function (foldername,normalized=F) {
   
   if (normalized) {
     # allow normalization as an argument
-    normalized = counts %>% group_by(filename) %>% mutate(ratio = count/sum(count)) %>% ungroup
-    norm_data_frame = normalized %>% group_by(word) %>% filter(sum(count)>1000,word!="") %>% select(-count)
-    td  = norm_data_frame %>% ungroup %>% spread(key=word,value=ratio,fill=0)
+    normalized = counts %>% 
+      group_by(filename) %>% 
+      mutate(ratio = count/sum(count)) %>% 
+      ungroup
+    norm_data_frame = normalized %>% 
+      group_by(word) %>% 
+      filter(sum(count)>1000,word!="") %>% 
+      select(-count)
+    td  = norm_data_frame %>% 
+      ungroup %>% spread(key=word,value=ratio,fill=0)
   }
   
   return(td)
