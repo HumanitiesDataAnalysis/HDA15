@@ -218,6 +218,7 @@ unique = allSOTUs %>%
 
 ``` {r}
 library(magrittr)
+
 allSOTUs = allSOTUs %>% as.tbl %>% filter(word!="")
 
 allSOTUs = allSOTUs %>% mutate(word2=lead(word,1),word3=lead(word,2))
@@ -268,6 +269,7 @@ transitions = allSOTUs %>%
   mutate(chance = n()/word1Count,bigramCount=n()) %>% 
   group_by(word,word2,word3) %>% 
   summarize(trigramChance = n()/bigramCount[1])
+
 ```
 
 Then, we'd make the "find next word" function work over spans of two words instead of one.

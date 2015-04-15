@@ -1,0 +1,16 @@
+---
+title: "9p-Vector Spaces"
+author: "Ben Schmidt"
+date: "3/26/2015"
+output: pdf_document
+---
+
+
+1. Use the Dunning likelihood scores to compare two sets of documents to each other--speculate about what those differences might mean.
+
+
+
+2. Try classifying some texts using a logit or naive Bayesian approach.
+
+
+3. Adjust the 

@@ -74,7 +74,9 @@ In a term-document matrix, the terms are the column names, and the values are th
 
 ```{r}
 library(tidyr)
-td = counts %>% spread(word,count,fill=0)
+
+td = counts %>% filter(word!="") %>% spread(word,count,fill=0)
+counts = counts %>% filter(word!="")
 ```
 
 Ordinarily, you might want to look at a `data.frame` in this situation. That's a bad idea here. The function `dim` lets you see how big a data.frame is: in this case, we have one that is 36 rows by 10,000 columns. Those 10,000 columns are the distinct rows.
@@ -84,7 +86,7 @@ Later, we'll work with these huge matrices. But for now, let's set up a filter t
 ``` {r}
 
 td = counts %>% group_by(word) %>% 
-  filter(sum(count)>100) %>% 
+  filter(sum(count)>100,!word %in% c("","year")) %>% 
   ungroup %>% 
   spread(word,count,fill=0)
 
@@ -95,9 +97,11 @@ dim(td)
 
 ``` {r}
 
-ggplot(td) + aes(x=america,y=freedom,label=year) + geom_text() + geom_path()
+ggplot(td) + aes(x=america,y=freedom,label=year) + geom_text() 
 
-ggplot(td) + aes(x=the,y=and,label=year) + geom_text() + geom_path()
+ggplot(td) + aes(x=year %>% as.numeric,y=freedom,label=year) + geom_line() 
+
+ggplot(td) + aes(x=the,y=and,label=year) + geom_text()
 
 
 ```
@@ -106,16 +110,18 @@ ggplot(td) + aes(x=the,y=and,label=year) + geom_text() + geom_path()
 With this sort of data, it's more useful to compare against a different set of texts.
 
 ``` {r}
-parties = read.table("data/SOTUparties.tsv",sep="\t",header=T) %>% mutate(year=as.character(year))
+parties = read.table("http://hda15.benschmidt.org/sets/data/SOTUparties.tsv",sep="\t",header=T) %>% mutate(year=as.character(year))
 
 td = td %>% inner_join(parties)
+
 
 ```
 
 Here's an elaborate ggplot of usage of "and" and "for"
 
 ``` {r}
-ggplot(td) + aes(x=`for`,y=and,label=name,color=party,pch=name) + geom_point(size=5)
+ggplot(td) + aes(x=`for`,y=and,label=name,color=party,pch=name) + geom_point(size=5) + scale_color_manual(values=c("blue","red"))
+  
 ```
 
 Note that we can get even more complicated: for instance, adding together lots of different words by using math in the aesthetic definition.
@@ -123,7 +129,7 @@ Note that we can get even more complicated: for instance, adding together lots o
 (Also note a little trick here. I want to use backticks around the word "if" because it's a **reserved word** in the R syntax.)
 
 ``` {r}
-ggplot(td) + aes(x=and+or,y=but+`if`,label=name,color=party,pch=name) + geom_point(size=5)
+ggplot(td) + aes(x=welfare/freedom,y=freedom+a,label=name,color=party,pch=name) + geom_point(size=5)
 ```
 
 As an in-class challenge--can you come up with a chart that accurately distinguishes between Democrats and Republicans?
@@ -143,13 +149,16 @@ counts %>%
   filter(word=="i") %>% ggplot() + aes(x=as.numeric(year),y=count) + geom_line()
 ```
 
-We can normalize these plots so that the term-document matrix gives the relative use per words of text.
+We can normalize these plots so that the term-document matrix gives the relative use per words of text. By setting `ratio = count/sum(count)` inside a `mutute` call, you get the percentage of the count.
+
 
 ``` {r}
-normalized = counts %>% group_by(year) %>% mutate(ratio = count/sum(count)) %>% ungroup
+normalized = counts %>% group_by(year) %>% 
+  mutate(ratio = count/sum(count)) %>% 
+  ungroup
 
 
-normalized %>% filter(word=="we") %>% ggplot() + aes(x=as.numeric(year),y=ratio) + geom_line()
+normalized %>% filter(word=="i") %>% ggplot() + aes(x=as.numeric(year),y=ratio) + geom_line()
 ```
 
 
@@ -158,7 +167,7 @@ normalized %>% filter(word=="we") %>% ggplot() + aes(x=as.numeric(year),y=ratio)
 ``` {r}
 norm_data_frame = normalized %>% group_by(word) %>% filter(mean(ratio) > .001) %>% select(-count)
 
-norm_td  = norm_data_frame %>% ungroup %>% spread(key=word,value=ratio,fill=0)
+norm_td  = norm_data_frame %>% ungroup %>% filter(word!="year") %>% spread(key=word,value=ratio,fill=0)
 ```
 
 
