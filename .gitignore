@@ -16,3 +16,9 @@ cleaning.pdf
 .DS_Store
 
 .DS_Store
+*.dbf
+*.prj
+*.xml
+*.shp
+*.zip
+*.shx
