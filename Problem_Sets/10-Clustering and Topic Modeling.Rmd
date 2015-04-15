@@ -226,10 +226,21 @@ allcounts$document = rownames(allcounts)
 topicCounts = allcounts %>% gather(topic,proportion,-document)
 ```
 
-Once the top
+Once the top fields are determined, you can combine things.
 
 ```{r}
 fedProportions = topicCounts %>% mutate(fedNumber = gsub("-.*","",document)) %>% group_by(fedNumber,topic) %>% summarize(ratio = mean(proportion))
 
 ggplot(fedProportions) + geom_tile(aes(x=fedNumber,y=topic,fill=ratio))
+```
+
+Here's an example of splitting up a long text into chunks for topic modeling.
+
+``` {r}
+carol = scan("data/Dickens/A Christmas Carol.txt",what="raw",sep=" ",quote="",comment.char="")
+carol = data.frame(word=carol)
+#Use the `cut` function to divide it into 100 parts
+withBreaks = carol %>% mutate(chunk=cut(1:length(word),100))
+grouped = withBreaks %>% group_by(chunk) %>% summarize(text=paste(word,collapse=" "))
+
 ```
