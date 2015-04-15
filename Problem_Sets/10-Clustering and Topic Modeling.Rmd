@@ -163,19 +163,21 @@ To do topic modelling at home, you'll install the "mallet" package for R.
 
 **Note: this depends on the rJava package, which some people may have trouble installing. If `install.packages("mallet")` doesn't work on your machine, write the list for help.**
 
+This code is mostly taken verbatim from David Mimno--just the names of the stoplist file and the tsv file to read in have changed.
 
 ``` {r}
+install.packages("mallet")
 library(mallet)
 
 federalistPapers = read.table("data/federalist-mallet.tsv",
                               sep="\t",quote="",
-                              comment.char="")
-
-input=federalistPapers
+                              comment.char="",stringsAsFactors = F,header=F)
+names(federalistPapers) = c("id","text")
+input=federalistPapers 
 
 n.topics=32
 
-mallet.instances <- mallet.import(input$id, input$text, 
+mallet.instances <- mallet.import(input$id, input$text, stoplist.file="data/stopwords.txt",
                                   token.regexp = "\\w+",preserve.case=F)
 
 topic.model <- MalletLDA(num.topics=n.topics)
@@ -184,7 +186,6 @@ topic.model$loadDocuments(mallet.instances)
 #Look at the word frequencies sorted in order.
 vocabulary <- topic.model$getVocabulary()
 word.freqs <- mallet.word.freqs(topic.model)
-head(word.freqs[order(-word.freqs$term.freq),],20)
 
 #Some preferences. Inside baseball: see Wallach and Mimno for what's going on.
 topic.model$setAlphaOptimization(20, 50)
@@ -206,16 +207,29 @@ topics.labels <- rep("", n.topics)
 for (topic in 1:n.topics) {
   topics.labels[topic] <- paste(
     mallet.top.words(topic.model, topic.words[topic,], num.top.words=5)$words, collapse=" "
-    )}
+)}
 
 #to look at the labels, type "topics.labels"
 
 
 rownames(doc.topics) = input$id
 colnames(doc.topics) = topics.labels
+```
 
-library(reshape2)
-allcounts = melt(doc.topics)
-names(allcounts) = c("doc","topic","proportion")
+We use the gather function from `tidyr` to convert from a matrix into a data frame: `-document` lets us gather in all the topic labels.
 
+```{r}
+library(tidyr)
+library(ggplot2)
+allcounts = (doc.topics) %>% as.data.frame
+allcounts$document = rownames(allcounts)
+topicCounts = allcounts %>% gather(topic,proportion,-document)
+```
+
+Once the top
+
+```{r}
+fedProportions = topicCounts %>% mutate(fedNumber = gsub("-.*","",document)) %>% group_by(fedNumber,topic) %>% summarize(ratio = mean(proportion))
+
+ggplot(fedProportions) + geom_tile(aes(x=fedNumber,y=topic,fill=ratio))
 ```
