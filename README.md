@@ -1,3 +1,5 @@
+For a later version of this course, see https://github.com/HumanitiesDataAnalysis/HDA19
+
 These are problem sets for my Humanities Data Analysis course.
 
 # If you're in the class
